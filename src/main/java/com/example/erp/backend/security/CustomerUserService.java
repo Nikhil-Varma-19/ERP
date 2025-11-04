@@ -1,8 +1,8 @@
 package com.example.erp.backend.security;
 
 import com.example.erp.backend.entities.User;
-import com.example.erp.backend.exceptions.DataNotFound;
 import com.example.erp.backend.repositories.UserRep;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,7 +26,7 @@ public class CustomerUserService  implements UserDetailsService {
 
     public User getUserById(Long id){
         Optional<User> user=userRep.findByIdAndIsActiveTrue(id);
-        if(user.isEmpty()) throw new DataNotFound("User Not Found");
+        if(user.isEmpty()) throw new JwtException("User Not Found");
         return user.get();
     }
 }
