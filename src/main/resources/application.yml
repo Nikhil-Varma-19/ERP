@@ -1,0 +1,30 @@
+server:
+  port: ${PORT}
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: ERP
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+  jpa:
+    hibernate:
+      ddl-auto: none
+      show-sql: ${DB_QUERY}
+    properties:
+      hibernate:
+        format_sql: ${DB_QUERY}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1
+    locations: classpath:db/migration
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    refresh-time: ${JWT_REFRESH_TIME}
+    exp-time: ${JWT_EXP_TIME}
