@@ -1,7 +1,7 @@
 package com.example.erp.backend.mapper;
 
 import com.example.erp.backend.dtos.AddUserDto;
-import com.example.erp.backend.dtos.AllUserDto;
+import com.example.erp.backend.dtos.UserDto;
 import com.example.erp.backend.entities.User;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -15,5 +15,5 @@ public interface UserMapper {
     @Mapping(target = "password",expression = "java(passwordEncoder.encode(addUserDto.getPassword()))")
     User addUserDtoToUser(AddUserDto addUserDto, @Context PasswordEncoder passwordEncoder);
 
-    AllUserDto userToUserDto(User user);
+    UserDto userToUserDto(User user);
 }
