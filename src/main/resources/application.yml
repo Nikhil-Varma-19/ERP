@@ -28,3 +28,7 @@ spring:
     secret-key: ${JWT_SECRET_KEY}
     refresh-time: ${JWT_REFRESH_TIME}
     exp-time: ${JWT_EXP_TIME}
+
+dir:
+  getFile: ${GET_FILE}
+  uploadFile: ${UPLOAD_FILE}

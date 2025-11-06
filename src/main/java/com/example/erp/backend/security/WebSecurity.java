@@ -1,6 +1,8 @@
 package com.example.erp.backend.security;
 
 import com.example.erp.backend.filters.JwtAuthFilter;
+import com.example.erp.backend.utilizs.FilePath;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@Slf4j
 public class WebSecurity {
 
     @Autowired
@@ -23,17 +26,22 @@ public class WebSecurity {
     @Autowired
     private AuthEntryPoint authEntryPoint;
 
+    @Autowired
+    private FilePath filePath;
+
 
     private String[] publicRoutes={"/v1/auth/**"};
 
     @Bean
     public SecurityFilterChain  filterChain(HttpSecurity httpSecurity) throws Exception{
+        String[] file=filePath.getPublicFile();
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(e -> e.authenticationEntryPoint(authEntryPoint))
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers(publicRoutes).permitAll()
+                                .requestMatchers(file).permitAll()
                                 .anyRequest().authenticated()
                         )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
