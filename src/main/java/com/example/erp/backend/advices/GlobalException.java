@@ -4,8 +4,10 @@ package com.example.erp.backend.advices;
 import com.example.erp.backend.dtos.ErrorLoggerDto;
 import com.example.erp.backend.exceptions.AlreadyPresent;
 import com.example.erp.backend.exceptions.DataNotFound;
+import com.example.erp.backend.exceptions.FileException;
 import com.example.erp.backend.exceptions.NoData;
 import com.example.erp.backend.services.LoggerService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +38,22 @@ public class GlobalException {
     @ExceptionHandler(NoData.class)
     public  ResponseEntity<ApiResponse<String>> noData(NoData ex){
         return  new ResponseEntity<>(ApiResponse.success(ex.getMessage()),HttpStatus.OK);
+    }
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiResponse<String>> handleMissingPart(MissingServletRequestPartException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.error("Missing required file part: " + ex.getRequestPartName()));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<String>> urlNotFound(NoResourceFoundException ex){
+        return  ResponseEntity.badRequest().body(ApiResponse.error("Url Not Found"));
+    }
+
+    @ExceptionHandler(FileException.class)
+    public ResponseEntity<ApiResponse<?>> stringToDto(FileException ex){
+        return new  ResponseEntity<>(ApiResponse.error(ex.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({AccessDeniedException.class,AuthorizationDeniedException.class})

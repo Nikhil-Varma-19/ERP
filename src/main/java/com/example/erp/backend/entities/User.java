@@ -35,6 +35,9 @@
         @Enumerated(EnumType.STRING)
         private Set<Role> roles;
 
+        @Column(name = "profile_img")
+        private String profileImg;
+
         @Override
         public Collection<? extends GrantedAuthority> getAuthorities() {
             return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_"+role.name()))

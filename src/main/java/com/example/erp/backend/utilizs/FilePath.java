@@ -17,7 +17,7 @@ public class FilePath {
     private String getFile;
 
     public String[] getPublicFile(){
-        return new String[]{getFile+"/**"};
+        return new String[]{getFile+"/tempFolder/**"};
     }
 
     @PostConstruct
