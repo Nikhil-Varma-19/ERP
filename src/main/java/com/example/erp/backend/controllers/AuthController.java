@@ -2,6 +2,7 @@ package com.example.erp.backend.controllers;
 
 
 import com.example.erp.backend.advices.ApiResponse;
+import com.example.erp.backend.dtos.ForgotPasswordDto;
 import com.example.erp.backend.dtos.LoginBodyDto;
 import com.example.erp.backend.dtos.LoginResponseDto;
 import com.example.erp.backend.services.AuthService;
@@ -36,6 +37,11 @@ public class AuthController {
         Map<String, String> map=new HashMap<>();
        map.put("token",token);
       return  ResponseEntity.ok(ApiResponse.success(map));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<String>>  forgotPassword(@RequestBody @Valid ForgotPasswordDto forgotPasswordDto){
+        return ResponseEntity.ok(ApiResponse.success(authService.forgotPassword(forgotPasswordDto.getEmail())));
     }
 
 

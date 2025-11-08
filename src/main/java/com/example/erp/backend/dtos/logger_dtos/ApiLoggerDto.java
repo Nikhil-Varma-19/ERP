@@ -1,4 +1,4 @@
-package com.example.erp.backend.dtos;
+package com.example.erp.backend.dtos.logger_dtos;
 
 import lombok.Data;
 

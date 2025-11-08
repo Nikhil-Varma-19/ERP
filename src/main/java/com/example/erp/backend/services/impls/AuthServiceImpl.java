@@ -2,11 +2,16 @@ package com.example.erp.backend.services.impls;
 
 import com.example.erp.backend.dtos.LoginBodyDto;
 import com.example.erp.backend.dtos.LoginResponseDto;
+import com.example.erp.backend.entities.EmailTemplate;
 import com.example.erp.backend.entities.User;
+import com.example.erp.backend.enums.ActionType;
 import com.example.erp.backend.exceptions.DataNotFound;
 import com.example.erp.backend.filters.JwtFilter;
+import com.example.erp.backend.repositories.EmailTemplateResp;
 import com.example.erp.backend.repositories.UserRep;
 import com.example.erp.backend.services.AuthService;
+import com.example.erp.backend.utilizs.EmailServices;
+import com.example.erp.backend.utilizs.OTPUtiliz;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -22,9 +28,9 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRep userRep;
     private final JwtFilter jwtFilter;
-
-
-
+    private final EmailTemplateResp emailTemplateResp;
+    private final EmailServices emailServices;
+    private final OTPAlertService otpAlertService;
 
     @Override
     public LoginResponseDto login(LoginBodyDto loginBodyDto) {
@@ -56,6 +62,24 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> user=userRep.findByIdAndIsActiveTrue(id);
         if(user.isEmpty()) throw  new DataNotFound("User Not Found");
         return jwtFilter.generateJWTToken(user.get());
+    }
+
+    @Override
+    public String forgotPassword(String email) {
+        User user=userRep.findByEmailAndIsActiveTrue(email).orElseThrow(()-> new DataNotFound("Email not found") );
+        EmailTemplate emailTemplate=emailTemplateResp.findByEventAndIsActiveTrue("forgotPassword").orElseThrow(()-> new DataNotFound("Template Not found"));
+        String otpGen= OTPUtiliz.generateOtp();
+        String text=emailTemplate.getContent().replaceAll("<otp>",otpGen);
+        text=text.replaceAll("<name>", user.getName());
+        String subject=emailTemplate.getSubject();
+        String[] to={user.getEmail()};
+        LocalDateTime expiryTime=LocalDateTime.now().plusMinutes(5);
+        boolean savedData= otpAlertService.addOTP(String.valueOf(ActionType.FORGOT_PASSWORD),otpGen, user.getEmail(), null,expiryTime);
+       if(!savedData){
+           return  "SomeThing Wrong";
+       }
+        emailServices.sendEmail(to,subject,text,null);
+        return "Mail is Send Successfully.";
     }
 
 

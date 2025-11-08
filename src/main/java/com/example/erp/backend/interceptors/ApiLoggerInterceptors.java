@@ -1,6 +1,6 @@
 package com.example.erp.backend.interceptors;
 
-import com.example.erp.backend.dtos.ApiLoggerDto;
+import com.example.erp.backend.dtos.logger_dtos.ApiLoggerDto;
 import com.example.erp.backend.services.LoggerService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

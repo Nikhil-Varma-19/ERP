@@ -1,13 +1,9 @@
 package com.example.erp.backend.advices;
 
 
-import com.example.erp.backend.dtos.ErrorLoggerDto;
-import com.example.erp.backend.exceptions.AlreadyPresent;
-import com.example.erp.backend.exceptions.DataNotFound;
-import com.example.erp.backend.exceptions.FileException;
-import com.example.erp.backend.exceptions.NoData;
+import com.example.erp.backend.dtos.logger_dtos.ErrorLoggerDto;
+import com.example.erp.backend.exceptions.*;
 import com.example.erp.backend.services.LoggerService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -39,6 +35,7 @@ public class GlobalException {
     public  ResponseEntity<ApiResponse<String>> noData(NoData ex){
         return  new ResponseEntity<>(ApiResponse.success(ex.getMessage()),HttpStatus.OK);
     }
+
     @ExceptionHandler(MissingServletRequestPartException.class)
     public ResponseEntity<ApiResponse<String>> handleMissingPart(MissingServletRequestPartException ex) {
         return ResponseEntity
@@ -49,6 +46,11 @@ public class GlobalException {
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiResponse<String>> urlNotFound(NoResourceFoundException ex){
         return  ResponseEntity.badRequest().body(ApiResponse.error("Url Not Found"));
+    }
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<ApiResponse<?>> emailError(EmailException ex){
+        return  new ResponseEntity<>(ApiResponse.error(ex.getMessage()),HttpStatus.BAD_GATEWAY);
     }
 
     @ExceptionHandler(FileException.class)

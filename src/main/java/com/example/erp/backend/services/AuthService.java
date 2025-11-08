@@ -9,4 +9,6 @@ public interface AuthService {
     LoginResponseDto login(LoginBodyDto loginBodyDto);
 
     String refreshToken(Cookie[] cookie);
+
+    String forgotPassword(String email);
 }
