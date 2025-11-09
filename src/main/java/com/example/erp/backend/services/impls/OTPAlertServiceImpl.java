@@ -1,6 +1,7 @@
 package com.example.erp.backend.services.impls;
 
 import com.example.erp.backend.entities.OTPAlerts;
+import com.example.erp.backend.exceptions.BadRequest;
 import com.example.erp.backend.exceptions.DataNotFound;
 import com.example.erp.backend.repositories.OTPAlertResp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +38,16 @@ public class OTPAlertServiceImpl implements OTPAlertService{
         OTPAlerts otpSaved=otpAlertResp.save(otpAlerts);
 
         return otpSaved.getId() == null ? false : true;
+    }
+
+    @Override
+    public OTPAlerts checkOTP(String actionType, String otp) {
+        OTPAlerts otpAlerts=otpAlertResp.findByIsActiveTrueAndOtpAndActionType(otp, actionType).orElseThrow(()-> new BadRequest("Invalid OTP. Please try again."));
+        LocalDateTime now=LocalDateTime.now();
+        if(otpAlerts.getExpiryTime().isBefore(now)){
+                throw  new BadRequest("OTP has expired. Please request a new one.");
+        }
+        otpAlerts.setIsActive(false);
+        return otpAlertResp.save(otpAlerts);
     }
 }

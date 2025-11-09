@@ -40,3 +40,8 @@ spring:
 dir:
   getFile: ${GET_FILE}
   uploadFile: ${UPLOAD_FILE}
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

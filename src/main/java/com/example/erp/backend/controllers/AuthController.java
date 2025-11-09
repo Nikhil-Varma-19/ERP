@@ -5,6 +5,7 @@ import com.example.erp.backend.advices.ApiResponse;
 import com.example.erp.backend.dtos.ForgotPasswordDto;
 import com.example.erp.backend.dtos.LoginBodyDto;
 import com.example.erp.backend.dtos.LoginResponseDto;
+import com.example.erp.backend.dtos.RestPasswordDto;
 import com.example.erp.backend.services.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +44,13 @@ public class AuthController {
     public ResponseEntity<ApiResponse<String>>  forgotPassword(@RequestBody @Valid ForgotPasswordDto forgotPasswordDto){
         return ResponseEntity.ok(ApiResponse.success(authService.forgotPassword(forgotPasswordDto.getEmail())));
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<?>>  resetPassword(@RequestBody @Valid RestPasswordDto restPasswordDto){
+        return ResponseEntity.ok(ApiResponse.success(authService.resetPassword(restPasswordDto)));
+
+    }
+
 
 
 

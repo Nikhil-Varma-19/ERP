@@ -2,6 +2,7 @@ package com.example.erp.backend.services.impls;
 
 import com.example.erp.backend.dtos.FileUploadDto;
 import com.example.erp.backend.entities.FileUpload;
+import com.example.erp.backend.exceptions.DataNotFound;
 import com.example.erp.backend.exceptions.FileException;
 import com.example.erp.backend.repositories.FileUploadRes;
 import com.example.erp.backend.services.FileUploadService;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -53,6 +55,28 @@ public class FileUploadServiceImpl implements FileUploadService {
             return modelMapper.map(savedFile, FileUploadDto.class);
         } catch (Exception e) {
             throw new FileException("File Upload Failed:"+e.getMessage());
+        }
+    }
+
+    @Override
+    public FileUpload getById(Long id) {
+        return fileUploadRes.findByIdAndIsActiveTrue(id).orElseThrow(()-> new DataNotFound("File not found"));
+    }
+
+    @Override
+    public void savedDelete(String path,FileUpload fileUpload) {
+        if(path != null && !path.isBlank()) fileUpload.setFilePath(path);
+        fileUpload.setIsActive(false);
+        fileUploadRes.save(fileUpload);
+    }
+
+    @Override
+    public void createFolderAndMoveFile(String source, String target,String dir) {
+        try{
+            Files.createDirectories(Path.of(dir));
+            Files.move(Path.of(source), Path.of(target), StandardCopyOption.REPLACE_EXISTING);
+        }catch (Exception e){
+            throw new FileException(e.getMessage());
         }
     }
 }

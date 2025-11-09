@@ -2,7 +2,9 @@ package com.example.erp.backend.services.impls;
 
 import com.example.erp.backend.dtos.LoginBodyDto;
 import com.example.erp.backend.dtos.LoginResponseDto;
+import com.example.erp.backend.dtos.RestPasswordDto;
 import com.example.erp.backend.entities.EmailTemplate;
+import com.example.erp.backend.entities.OTPAlerts;
 import com.example.erp.backend.entities.User;
 import com.example.erp.backend.enums.ActionType;
 import com.example.erp.backend.exceptions.DataNotFound;
@@ -17,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -31,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final EmailTemplateResp emailTemplateResp;
     private final EmailServices emailServices;
     private final OTPAlertService otpAlertService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponseDto login(LoginBodyDto loginBodyDto) {
@@ -80,6 +85,16 @@ public class AuthServiceImpl implements AuthService {
        }
         emailServices.sendEmail(to,subject,text,null);
         return "Mail is Send Successfully.";
+    }
+
+    @Override
+    @Transactional
+    public String resetPassword(RestPasswordDto restPasswordDto) {
+      OTPAlerts otpAlerts=otpAlertService.checkOTP(String.valueOf(ActionType.FORGOT_PASSWORD),restPasswordDto.getOtp());
+      User user=userRep.findByEmailAndIsActiveTrue(otpAlerts.getEmail()).orElseThrow(()-> new DataNotFound("User Not found"));
+      user.setPassword(passwordEncoder.encode(restPasswordDto.getPassword()));
+      userRep.save(user);
+        return "Password is Successfully Updated";
     }
 
 

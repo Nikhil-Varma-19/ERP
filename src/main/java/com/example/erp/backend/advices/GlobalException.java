@@ -21,6 +21,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,6 +35,11 @@ public class GlobalException {
     @ExceptionHandler(NoData.class)
     public  ResponseEntity<ApiResponse<String>> noData(NoData ex){
         return  new ResponseEntity<>(ApiResponse.success(ex.getMessage()),HttpStatus.OK);
+    }
+
+    @ExceptionHandler(BadRequest.class)
+    public  ResponseEntity<ApiResponse<String>> badRequest(BadRequest ex){
+        return  new ResponseEntity<>(ApiResponse.success(ex.getMessage()),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingServletRequestPartException.class)
@@ -68,6 +74,12 @@ public class GlobalException {
         return new ResponseEntity<>(ApiResponse.error(ex.getMessage()),HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ApiResponse<?>> handleFileError(IOException ex) {
+        return new ResponseEntity<>(ApiResponse.error("File operation failed: " + ex.getMessage()),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(AlreadyPresent.class)
     public ResponseEntity<ApiResponse<?>> handleAlreadyPresent(AlreadyPresent ex){
         return new ResponseEntity<>(ApiResponse.error(ex.getMessage()),HttpStatus.CONFLICT);
@@ -87,13 +99,14 @@ public class GlobalException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public  ResponseEntity<ApiResponse<?>> validationFailed(MethodArgumentNotValidException ex){
-        List<String>  errors=ex.getBindingResult().getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
+        List<String>  errors=ex.getBindingResult().getFieldErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
         return  new ResponseEntity<>(ApiResponse.error(errors.getFirst()),HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class, HandlerMethodValidationException.class})
-    public  ResponseEntity<ApiResponse<?>> validationFailed(Exception ex){
-        return  new ResponseEntity<>(ApiResponse.error("Invalid ID. ID must be a number."),HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public  ResponseEntity<ApiResponse<?>> validationFailed(MethodArgumentTypeMismatchException ex){
+        String res= "id".equals(ex.getName()) ? "Invalid ID. ID must be a number." : ex.getMessage();
+        return  new ResponseEntity<>(ApiResponse.error(res),HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

@@ -5,18 +5,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class AddVendorDto {
-    @NotBlank(message = "Name is Required.")
+public class UpdateVendorDto {
+
     @Size(min = 3,max = 50,message = "Name must be between 3 and 50 characters.")
     private String name;
 
-    @NotBlank(message = "Contact No is required.")
     @Size(min = 10,max=15,message = "Contact should be in between 10 to 15 number.")
     private String contactNo;
 
-    @NotBlank(message = "Email is required.")
     @Email(message = "Invalid email format")
     private String email;
 
@@ -39,5 +38,7 @@ public class AddVendorDto {
     private Integer creditPeriod;
 
     private Long agreementId;
+
+
 
 }

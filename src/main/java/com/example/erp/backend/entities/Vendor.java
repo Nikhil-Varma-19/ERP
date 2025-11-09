@@ -3,9 +3,14 @@ package com.example.erp.backend.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Table(name = "vendors")
 @Entity
+@Getter
+@Setter
 public class Vendor extends  DBCommon{
 
     private String name;
