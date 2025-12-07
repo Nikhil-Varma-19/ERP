@@ -1,0 +1,2 @@
+ALTER TABLE resources
+ALTER COLUMN joining_date DROP DEFAULT;

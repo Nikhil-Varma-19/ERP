@@ -2,14 +2,23 @@ package com.example.erp.backend.entities;
 
 
 import com.example.erp.backend.enums.ResumeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "resources")
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Resource extends  DBCommon{
 
     @Column(name = "first_name")
@@ -38,12 +47,12 @@ public class Resource extends  DBCommon{
     @Column(name = "passing_year")
     private Integer passingYear;
 
-    @OneToMany(mappedBy = "resource")
-    @JsonManagedReference
-    private List<ResourceSkill> skills;
+    @OneToMany(mappedBy = "resource",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<ResourceSkill> skills=new ArrayList<>();
 
     @Column(name = "joining_date")
-    private LocalDate joiningDate=LocalDate.now();
+    private LocalDate joiningDate;
 
     @Column(name = "contract_end_date")
     private LocalDate contractEndDate;
@@ -61,11 +70,9 @@ public class Resource extends  DBCommon{
     @Column(name = "position_update",columnDefinition = "TEXT")
     private String positionUpdate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id")
     private  Vendor vendor;
-
-
 
 
 

@@ -17,4 +17,6 @@ public interface FileUploadService {
     void savedDelete(String path,FileUpload fileUpload);
 
     void createFolderAndMoveFile(String source,String target,String dir);
+
+    String uploadFileFromApi(String path,MultipartFile file);
 }

@@ -79,4 +79,18 @@ public class FileUploadServiceImpl implements FileUploadService {
             throw new FileException(e.getMessage());
         }
     }
+
+    @Override
+    public String uploadFileFromApi(String path, MultipartFile file) {
+        try{
+            String createDir=filePathUtilise.getUploadFile()+path;
+            Files.createDirectories(Path.of(createDir));
+            String fileName=UUID.randomUUID()+"_"+file.getOriginalFilename();
+            String uploadFile=createDir+"/"+fileName;
+            Files.write(Path.of(uploadFile),file.getBytes());
+            return uploadFile.replaceAll("uploads",filePathUtilise.getGetFile());
+        }catch (Exception e){
+            throw new FileException(e.getMessage());
+        }
+    }
 }

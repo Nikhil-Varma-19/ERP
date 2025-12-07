@@ -4,9 +4,12 @@ import com.example.erp.backend.dtos.PageResponseDto;
 import com.example.erp.backend.dtos.TechnologyData;
 import com.example.erp.backend.entities.Technology;
 import com.example.erp.backend.exceptions.AlreadyPresent;
+import com.example.erp.backend.exceptions.BadRequest;
 import com.example.erp.backend.exceptions.DataNotFound;
+import com.example.erp.backend.repositories.ResourceSkillResp;
 import com.example.erp.backend.repositories.TechnologyRep;
 import com.example.erp.backend.services.TechnologyService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,12 +17,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TechnologyServiceImpl implements TechnologyService {
-    @Autowired
-    private TechnologyRep technologyRep;
+    private final TechnologyRep technologyRep;
+    private final ResourceSkillResp resourceSkillResp;
+
     @Override
     public String addTechnology(String name) {
         if(technologyRep.existsByNameAndIsActiveTrueAndIdNot(name,0L)){
@@ -52,7 +57,7 @@ public class TechnologyServiceImpl implements TechnologyService {
     @Override
     public PageResponseDto<?> getAllTechnology(String search, int page, int size) {
         Pageable pageable= PageRequest.of(page, size, Sort.by("id").descending());
-        Page<TechnologyData> technologies=(search == null || search.isBlank() ) ? technologyRep.findByIsActiveTrue(pageable) : technologyRep.findByIsActiveTrueAndName(search,pageable);
+        Page<TechnologyData> technologies=(search == null || search.isBlank() ) ? technologyRep.findByIsActiveTrue(pageable) : technologyRep.findByIsActiveTrueAndName("%"+search+"%",pageable);
         PageResponseDto<TechnologyData> response=new PageResponseDto<>();
         response.setResults(technologies.stream().toList());
         response.setCurrentPage(technologies.getNumber());
@@ -65,4 +70,19 @@ public class TechnologyServiceImpl implements TechnologyService {
     public Technology getById(Long id) {
         return technologyRep.findByIdAndIsActiveTrue(id).orElseThrow(()->new DataNotFound("Technology not found"));
     }
+
+    @Override
+    public List<Technology> allTechnologyPresent(List<Long> ids) {
+      List<Technology> technologies=  technologyRep.findByIsActiveTrueAndIdIn(ids);
+      if(ids.size() != technologies.size()) throw  new DataNotFound("Technology not found");
+        return technologies;
+    }
+
+    @Override
+    public void deleteTechnologyBulk(List<Long> ids) {
+      int updateCount= resourceSkillResp.updateResourceSkillIsActiveFalse(ids);
+      if(updateCount != ids.size()) throw new BadRequest("Update skill count is not matched");
+    }
+
+
 }

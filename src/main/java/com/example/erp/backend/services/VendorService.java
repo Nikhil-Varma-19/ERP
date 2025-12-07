@@ -5,6 +5,7 @@ import com.example.erp.backend.dtos.vendor_dtos.AddVendorDto;
 import com.example.erp.backend.dtos.vendor_dtos.GetAllVendorDto;
 import com.example.erp.backend.dtos.vendor_dtos.UpdateVendorDto;
 import com.example.erp.backend.dtos.vendor_dtos.VendorByIdDto;
+import com.example.erp.backend.entities.Vendor;
 
 public interface VendorService {
     String addVendor(AddVendorDto addVendorDto);
@@ -16,4 +17,6 @@ public interface VendorService {
     String updateVendor(Long id, UpdateVendorDto updateVendorDto);
 
     String deleteVendor(Long id);
+
+    Vendor getById(Long id);
 }

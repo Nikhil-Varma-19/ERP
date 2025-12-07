@@ -2,25 +2,26 @@ package com.example.erp.backend.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Table(name = "resource_skill")
 @Entity
-//@Where(clause = "is_active = true")
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ResourceSkill extends  DBCommon{
 
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resource_id")
-    @JsonBackReference
+//    @JsonBackReference
     private Resource resource;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "technology_id")
-    @JsonBackReference(value = "tech-skill")
+//    @JsonBackReference(value = "tech-skill")
    private Technology technology;
 
 

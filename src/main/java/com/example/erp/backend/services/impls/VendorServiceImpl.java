@@ -84,7 +84,7 @@ public class VendorServiceImpl implements VendorService {
     public PageResponseDto<GetAllVendorDto> getAllVendor(String search, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Vendor> vendors = (search == null || search.isBlank()) ? vendorRep.findByIsActiveTrue(pageable)
-                : vendorRep.searchActiveVendors(search, pageable);
+                : vendorRep.searchActiveVendors("%"+search+"%", pageable);
         if (vendors.isEmpty()) throw new NoData("No Data");
         Page<GetAllVendorDto> mapVendor = vendors.map(vendor -> modelMapper.map(vendor, GetAllVendorDto.class));
         PageResponseDto<GetAllVendorDto> response = new PageResponseDto<>();
@@ -148,5 +148,10 @@ public class VendorServiceImpl implements VendorService {
         vendor.get().setIsActive(false);
         vendorRep.save(vendor.get());
         return "Vendor is Delete Successfully.";
+    }
+
+    @Override
+    public Vendor getById(Long id) {
+        return vendorRep.findByIdAndIsActiveTrue(id).orElseThrow(()-> new DataNotFound("Vendor not found."));
     }
 }
