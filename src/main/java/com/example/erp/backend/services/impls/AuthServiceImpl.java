@@ -12,6 +12,7 @@ import com.example.erp.backend.filters.JwtFilter;
 import com.example.erp.backend.repositories.EmailTemplateResp;
 import com.example.erp.backend.repositories.UserRep;
 import com.example.erp.backend.services.AuthService;
+import com.example.erp.backend.services.RedisService;
 import com.example.erp.backend.utilizs.EmailServices;
 import com.example.erp.backend.utilizs.OTPUtiliz;
 import jakarta.servlet.http.Cookie;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class AuthServiceImpl implements AuthService {
     private final EmailServices emailServices;
     private final OTPAlertService otpAlertService;
     private final PasswordEncoder passwordEncoder;
+    private final RedisService redisService;
 
     @Override
     public LoginResponseDto login(LoginBodyDto loginBodyDto) {
