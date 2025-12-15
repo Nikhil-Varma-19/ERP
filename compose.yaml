@@ -1,0 +1,61 @@
+services:
+  erp-backend:
+    build: .
+    restart: always
+    image: erp-backend
+    container_name: erp-v1
+    env_file:
+      - .env.production
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - "4000:5000"
+    volumes:
+      - uploaded-files:/app/uploads
+    networks:
+      - spring-network-erp
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: erp-postgres
+    env_file:
+      - .env.postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5454:5432"
+    restart: always
+    networks:
+      - spring-network-erp
+
+  redis:
+    restart: always
+    image: redis:latest
+    container_name: erp-redis
+    env_file:
+      - .env.postgres
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6370:6379"
+    networks:
+      - spring-network-erp
+
+
+volumes:
+  postgres-data:
+    name: erp_postgres-data
+  uploaded-files:
+    name: erp_uploaded-files
+  redis-data:
+    name: erp_redis-data
+
+
+networks:
+  spring-network-erp:
+    driver: bridge
+
+

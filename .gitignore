@@ -1,5 +1,9 @@
 HELP.md
 .env
+.env.local.cont
+.env.postgres
+.env.postgres
+.env.production
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
